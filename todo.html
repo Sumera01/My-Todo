@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Priority To-Do List</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --danger: #f72585;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --dark: #212529;
+            --light: #f8f9fa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f5f7fa;
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        @media (min-width: 768px) {
+            .app-container {
+                flex-direction: row;
+            }
+        }
+
+        .image-section {
+            background: url('2.png') center/cover no-repeat;
+            min-height: 300px;
+            display: flex;
+            align-items: flex-end;
+            padding: 30px;
+            color: white;
+            position: relative;
+        }
+
+        .image-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .image-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .image-content h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .image-section {
+                width: 50%;
+                min-height: 100vh;
+                padding: 3rem;
+            }
+        }
+
+        .task-container {
+            width: 100%;
+            padding: 20px;
+            background: white;
+        }
+
+        @media (min-width: 768px) {
+            .task-container {
+                width: 50%;
+                padding: 3rem;
+                overflow-y: auto;
+                max-height: 100vh;
+            }
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 2.2rem;
+            text-align: center;
+        }
+
+        .task-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .task-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .task-input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .priority-select {
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+        }
+
+        .add-btn {
+            padding: 12px 25px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .add-btn:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .divider {
+            height: 1px;
+            background: #e9ecef;
+            margin: 0 0 20px 0;
+        }
+
+        .priority-section {
+            margin-bottom: 30px;
+        }
+
+        .priority-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid;
+            display: inline-block;
+        }
+
+        .priority-high .priority-title {
+            color: #c62828;
+            border-color: #ffebee;
+        }
+
+        .priority-medium .priority-title {
+            color: #f57f17;
+            border-color: #fff8e1;
+        }
+
+        .priority-low .priority-title {
+            color: #2e7d32;
+            border-color: #e8f5e9;
+        }
+
+        .task-list {
+            list-style: none;
+        }
+
+        .task-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            border-left: 4px solid;
+        }
+
+        .task-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .high-priority {
+            border-left-color: #c62828;
+        }
+
+        .medium-priority {
+            border-left-color: #f57f17;
+        }
+
+        .low-priority {
+            border-left-color: #2e7d32;
+        }
+
+        .task-text {
+            flex: 1;
+            margin-right: 15px;
+        }
+
+        .priority-tag {
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin-right: 10px;
+        }
+
+        .priority-high .priority-tag {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .priority-medium .priority-tag {
+            background-color: #fff8e1;
+            color: #f57f17;
+        }
+
+        .priority-low .priority-tag {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .delete-btn {
+            padding: 8px 15px;
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:hover {
+            background-color: #d11a6b;
+        }
+
+        .empty-message {
+            color: #6c757d;
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Image Section -->
+        <section class="image-section">
+            <div class="image-content">
+                <h2>Get Things Done</h2>
+                <p>Organize your tasks and boost your productivity</p>
+            </div>
+        </section>
+
+        <!-- Task Section -->
+        <section class="task-container">
+            <h1>To-Do List</h1>
+            
+            <!-- Task Adder Form -->
+            <form id="taskForm" class="task-form">
+                <input type="text" id="taskInput" class="task-input" placeholder="What needs to be done?" required>
+                <select id="priorityInput" class="priority-select">
+                    <option value="high">High Priority</option>
+                    <option value="medium" selected>Medium Priority</option>
+                    <option value="low">Low Priority</option>
+                </select>
+                <button type="submit" class="add-btn">Add Task</button>
+            </form>
+            
+            <!-- Divider Line -->
+            <div class="divider"></div>
+            
+            <!-- Priority Sections -->
+            <div class="priority-section priority-high">
+                <h2 class="priority-title">High Priority Tasks</h2>
+                <ul id="highTaskList" class="task-list">
+                    <li class="empty-message">No high priority tasks</li>
+                </ul>
+            </div>
+            
+            <div class="priority-section priority-medium">
+                <h2 class="priority-title">Medium Priority Tasks</h2>
+                <ul id="mediumTaskList" class="task-list">
+                    <li class="empty-message">No medium priority tasks</li>
+                </ul>
+            </div>
+            
+            <div class="priority-section priority-low">
+                <h2 class="priority-title">Low Priority Tasks</h2>
+                <ul id="lowTaskList" class="task-list">
+                    <li class="empty-message">No low priority tasks</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Select elements
+        const taskForm = document.getElementById("taskForm");
+        const taskInput = document.getElementById("taskInput");
+        const priorityInput = document.getElementById("priorityInput");
+        const highTaskList = document.getElementById("highTaskList");
+        const mediumTaskList = document.getElementById("mediumTaskList");
+        const lowTaskList = document.getElementById("lowTaskList");
+
+        // Load tasks from localStorage
+        document.addEventListener("DOMContentLoaded", () => {
+            const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+            renderTasks(tasks);
+        });
+
+        // Add task
+        taskForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const taskText = taskInput.value.trim();
+            if (!taskText) return;
+            
+            const priority = priorityInput.value;
+            const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+            tasks.push({ 
+                text: taskText, 
+                priority,
+                id: Date.now() // Add unique ID
+            });
+            localStorage.setItem("tasks", JSON.stringify(tasks));
+
+            taskInput.value = "";
+            renderTasks(tasks);
+        });
+
+        // Render tasks by priority
+        function renderTasks(tasks) {
+            // Clear all lists first
+            highTaskList.innerHTML = "";
+            mediumTaskList.innerHTML = "";
+            lowTaskList.innerHTML = "";
+            
+            // Separate tasks by priority
+            const highPriorityTasks = tasks.filter(task => task.priority === "high");
+            const mediumPriorityTasks = tasks.filter(task => task.priority === "medium");
+            const lowPriorityTasks = tasks.filter(task => task.priority === "low");
+            
+            // Render high priority tasks
+            if (highPriorityTasks.length > 0) {
+                highPriorityTasks.forEach(task => {
+                    highTaskList.appendChild(createTaskElement(task));
+                });
+            } else {
+                highTaskList.innerHTML = '<li class="empty-message">No high priority tasks</li>';
+            }
+            
+            // Render medium priority tasks
+            if (mediumPriorityTasks.length > 0) {
+                mediumPriorityTasks.forEach(task => {
+                    mediumTaskList.appendChild(createTaskElement(task));
+                });
+            } else {
+                mediumTaskList.innerHTML = '<li class="empty-message">No medium priority tasks</li>';
+            }
+            
+            // Render low priority tasks
+            if (lowPriorityTasks.length > 0) {
+                lowPriorityTasks.forEach(task => {
+                    lowTaskList.appendChild(createTaskElement(task));
+                });
+            } else {
+                lowTaskList.innerHTML = '<li class="empty-message">No low priority tasks</li>';
+            }
+        }
+
+        // Create task element
+        function createTaskElement(task) {
+            const li = document.createElement("li");
+            li.className = `task-item ${task.priority}-priority`;
+            li.innerHTML = `
+                <div class="task-text">${task.text}</div>
+                <span class="priority-tag">${task.priority}</span>
+            `;
+            li.appendChild(createDeleteButton(task.id));
+            return li;
+        }
+
+        // Create delete button
+        function createDeleteButton(taskId) {
+            const button = document.createElement("button");
+            button.className = "delete-btn";
+            button.textContent = "Delete";
+            button.addEventListener("click", () => {
+                const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+                const updatedTasks = tasks.filter(task => task.id !== taskId);
+                localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+                renderTasks(updatedTasks);
+            });
+            return button;
+        }
+    </script>
+</body>
+
+</html>
