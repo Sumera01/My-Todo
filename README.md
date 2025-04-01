@@ -1,4 +1,4 @@
-# Visual Priority To-Do List
+# My To-Do List
 
 A beautiful, color-coded todo list application that helps you organize tasks by priority with simple visual selection.
 
